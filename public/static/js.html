@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript</title>
+</head>
+<body>
+  <div class="page">Linyb的测试内容</div>
+</body>
+<script type="text/javascript">
+  window.addEventListener('message', function(event) { //接收vue传递的参数
+    // document.getElementById('tem').style.height = event.data + 'px';
+    console.log('接收');
+ }, false);
+</script>
+<style>
+  .page {
+    background-color: aqua;
+    color: #FFF;
+  }
+</style>
+</html>
