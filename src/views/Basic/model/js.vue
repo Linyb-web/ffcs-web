@@ -20,13 +20,13 @@
         <!-- 案例分享_start -->
         <div v-for="(exampleItem, exampleIndex) in eveItem.example" :key="exampleIndex">
           <h5>案例<span v-if="eveItem.example?.length>1">{{ `${exampleIndex+1}` }}</span>{{ `:${exampleItem.text}` }}</h5>
-          <div class="html-area" v-html="exampleItem.html" @click="clickFun(exampleIndex, exampleItem.html)"></div>
-          <!-- 页面嵌套 -->
-          <iframe v-if="eveItem.isFrame" id="jsFrame" src="/static/js.html" frameborder="0"></iframe>
-          <div v-else @click="postMessage(eveItem)">查看</div>
+          <!-- <div class="html-area" v-html="exampleItem.html" @click="clickFun(exampleIndex, exampleItem.html)"></div> -->
+          <div class="even-area-click" @click="postMessage(exampleItem)">我瞅瞅</div>
         </div>
         <!-- 案例分享_ end  -->
       </div>
+      <!-- 页面嵌套 -->
+      <iframe v-if="frameIs" ref="frameRef" class="frame-area" src="/static/js.html" frameborder="0"></iframe>
     </div>
     <!-- 事件区域_ end  -->
   </div>
@@ -47,31 +47,33 @@ const pageObj = reactive({
     ]
   }
 })
+let frameIs = ref(false);
 let appCodeObj = ref(navigator)
+const frameRef = ref(null);
 const evenObj = reactive({
   title: 'DOM事件',
   list: [
-    {name: 'click', desc: '用户点击事件，当前事件内可以执行代码行、调用函数等进行操作', isFrame: false, example: [
-      {text: '<h5 onclick="this.innerHTML=123">点击该文本，执行代码段</h5>', html: '<h5 onclick="this.innerHTML=123">点击该文本，执行代码段</h5>'},
-      {text: '<h5 onclick="clickFun()">点击该文本，执行函数</h5> 脚本信息：function clickFun{this.innerHTML=1234}', html: '<h5>点击该文本，执行函数</h5>'},
-    ]},
     {name: 'onload和onunload', desc: '用户进入后离开页面时被触发，常用来检测访问者浏览器类型、版本以及处理cookie等',  example: [
-      {text: '<body onload="getAppCodeName()"></body>', html: `浏览器名称：${appCodeObj.value.appCodeName} <br/>浏览器版本：${appCodeObj.value.appVersion}`}
+      {text: '<body onload="getAppCodeName()"></body>'}
+    ]},
+    {name: 'click', desc: '用户点击事件，当前事件内可以执行代码行、调用函数等进行操作', example: [
+      {text: `<h5 onclick="this.innerHTML='✎＿ 代码段进行赋值'">点击该文本，执行代码段</h5>`, isFrame: false, dom: 'clickDom'},
+      {text: `<h5 onclick="clickFun('函数进行赋值')">点击该文本，执行函数</h5>`, isFrame: false, dom: 'clickFun'},
     ]},
     {name: 'onchange', desc: '结合输入字段的验证使用，或者是有一定页面交互时进行使用',  example: [
-      {text: '<input type="text" onchange="getChangeVal()" >', html: '<input type="text" @change="getChangeVal" >'}
+      {text: `<input type="text" id="changeDom" onchange="getChangeVal()" ><h5 id="inputGet"></h5>`}
     ]},
     {name: 'onmouseover和onmouseout', desc: '用户的鼠标移至 HTML 元素上方或移出元素时触发函数',  example: [
-      {text: '<div onmouseover="mOver(this)" onmouseout="mOut(this)" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>', html: '<div v-on:mouseover="mOver()" v-on:mouseout="mOut()" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>'}
+      {text: '<div onmouseover="mOver(this)" onmouseout="mOut(this)" class="mouseout">把鼠标移到上面</div>'}
     ]},
     {name: 'onmousedown和onmouseup', desc: '用户的鼠标移至 HTML 元素按下或抬起时间时触发函数',  example: [
-      {text: '<div onmousedown="mOver(this)" onmousedown="mOut(this)" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>', html: '<div v-on:mouseover="mOver()" v-on:mouseout="mOut()" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>'}
+      {text: '<div onmousedown="mDown(this)" onmouseup="mUp(this)" class="mouseout">试试鼠标点这里</div>'}
     ]},
-    {name: 'onload', desc: '用户页面加载完成时，进行执行',  example: [
-      {text: '<div onload="mOver(this)">把鼠标移到上面</div>', html: '<div v-on:mouseover="mOver()" v-on:mouseout="mOut()" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>'}
-    ]},
+    // {name: 'onload', desc: '用户页面加载完成时，进行执行',  example: [
+    //   {text: '<div onload="mOver(this)">把鼠标移到上面</div>'}
+    // ]},
     {name: 'onfocus', desc: '用户移动标签内获取焦点是，进行执行',  example: [
-      {text: '<input type="text" onfocus="myFunction(this)">', html: '<div v-on:mouseover="mOver()" v-on:mouseout="mOut()" style="background-color:green;width:120px;height:20px;padding:40px;color:#ffffff;">把鼠标移到上面</div>'}
+      {text: '<input type="text" onfocus="onFocus(this)" onblur="onBlur(this)"><h5 id="inputOn"></h5>'}
     ]}
   ]
 })
@@ -90,10 +92,10 @@ let mOver = (() => {
 let mOut = (() => {
   console.log('离开');
 })
-let postMessage = (() => {
-  let jsFrameWindow = document.querySelector('#jsFrame').contentWindow;
-  jsFrameWindow.postMessage({name: 'Linyb'}, "*");  // 发送消息至html页面
-  console.log('传入');
+let postMessage = ((item) => {
+  if(!frameIs.value) return frameIs.value = true;
+  let iframeWin = frameRef.value.contentWindow;
+  iframeWin.postMessage({name: 'Linyb', html: item.text}, '*')
 })
 onMounted(() => {
   // console.log('浏览器版本', navigator);
@@ -132,6 +134,13 @@ obj.innerHTML="把鼠标移到上面"
       cursor: pointer;
       color: #ff9900;
     }
+  }
+  .frame-area {
+    position: absolute;
+    right: 0;
+    top: 20%;
+    width: 30%;
+    height: 500px;
   }
 }
 </style>

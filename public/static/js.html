@@ -5,19 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JavaScript</title>
 </head>
-<body>
-  <div class="page">Linyb的测试内容</div>
+<body onload="getAppCodeName()">
+  <div class="page" id="page">Linyb的测试内容</div>
 </body>
 <script type="text/javascript">
+  function clickFun(msg) {
+    document.getElementById('page').innerHTML = `<h5>${msg} ٩(•̤̀ᵕ•̤́๑)ᵒᵏᵎᵎ </h5>`
+  }
+  function getAppCodeName() {
+    document.getElementById('page').innerHTML = '浏览器名称：' + navigator.appCodeName + '<br />浏览器版本：' + navigator.appVersion;
+  }
+  function getChangeVal() {
+    var e = document.getElementById("changeDom");
+    // var page = document.getElementById("page");
+    // var elementNode = document.createElement("h5");//创建元素节点(p)
+    // elementNode.innerHTML = '您当前获取了：' + e.value;
+    // page.appendChild(elementNode)
+    let h5 = document.getElementById('inputGet');
+    h5.innerHTML = `您当前获取了：${e.value}`
+  }
+  function mOver(e) {
+    console.log(e);
+    e.innerHTML = '鼠标进入(๑•̀ㅂ•́)و✧';
+    e.setAttribute('class', 'mouseover');
+    // e.style.cssText = "background-color: #ff0;width:120px;height:20px;padding:40px;color:#ffffff;";
+  }
+  function mOut(e) {
+    e.innerHTML = '鼠标离开(๑•̀ㅁ•́ฅ✧';
+    e.setAttribute('class', 'mouseout')
+    // e.style.cssText = "background-color: green;width:120px;height:20px;padding:40px;color:#ffffff;";
+  }
+  function mDown(e) {
+    // console.log('鼠标按下', e);
+    e.innerHTML = '鼠标按下(ﾟ⊿ﾟ)ﾂ';
+    e.setAttribute('class', 'mouseover');
+  }
+  function mUp(e) {
+    // console.log('鼠标抬起', e); 
+    e.innerHTML = '鼠标抬起(•̀ᴗ•́)و ̑̑';
+    e.setAttribute('class', 'mouseout');
+  }
+  function onFocus(e) {
+    // console.log('获取焦点', e.value);
+    let msg = e.value;
+    let h5 = document.getElementById('inputOn');
+    h5.innerHTML = `获取焦点┏(＾0＾)┛ ${msg ? '上次输入内容：' + msg : ''}`
+  }
+  function onBlur(e) {
+    // console.log('离开焦点', e.value);
+    let msg = e.value;
+    let h5 = document.getElementById('inputOn');
+    h5.innerHTML = `失去焦点┗(＾0＾)┓ ${msg ? '但获取到内容：' + msg : ''}`
+  }
+
   window.addEventListener('message', function(event) { //接收vue传递的参数
-    // document.getElementById('tem').style.height = event.data + 'px';
-    console.log('接收');
+    console.log('接收', event);
+    document.getElementById('page').innerHTML = event.data.html;
  }, false);
 </script>
 <style>
   .page {
-    background-color: aqua;
-    color: #FFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+    /* height: 90%; */
+    height: 460px;
+    padding: 12px 5%;
+    border-radius: 6px;
+    box-shadow: 3px 3px rgba(0, 0, 0, .2);
+    background-color: rgba(255, 255, 255, .7);
+  }
+  .mouseover {
+    background-color: bisque;
+    width:180px;
+    height:20px;
+    padding:40px;
+    color: green;
+    text-align: center;
+    border-radius: 5px;
+  }
+  .mouseout {
+    background-color: green;
+    width:180px;
+    height:20px;
+    padding:40px;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 5px;
   }
 </style>
 </html>
